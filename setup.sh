@@ -15,6 +15,7 @@ packages=(
   fd
 )
 
+sudo apt update
 sudo apt install npm ripgrep
 
 for pkg in "${packages[@]}"; do
