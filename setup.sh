@@ -11,7 +11,7 @@ apt upgrade
 
 add-apt-repository ppa:neovim-ppa/unstable
 
-apt install neovim
+apt install -y neovim
 
 cp -r "$PWD/dotfiles/nvim" "$XDG_CONFIG_HOME"/nvim
 cp -r "$PWD/dotfiles/.tmux.conf" "$VSCODE_HOME"/.tmux.conf
