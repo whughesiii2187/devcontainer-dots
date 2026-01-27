@@ -19,5 +19,5 @@ cp -r "$PWD/dotfiles/.tmux" "$VSCODE_HOME"/.tmux
 
 chown -R "$VSCODE_USER:$VSCODE_USER" "$VSCODE_HOME"
 
-echo alias ff='nvim "$(fzf)"' >> "VSCODE_HOME"/.zshrc
+echo "alias ff='nvim "$(fzf)"'" >> "VSCODE_HOME"/.zshrc
 usermod -s /usr/bin/zsh "$VSCODE_USER"
