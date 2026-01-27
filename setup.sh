@@ -17,4 +17,4 @@ cp -r "$PWD/dotfiles/nvim" "$XDG_CONFIG_HOME"/nvim
 cp -r "$PWD/dotfiles/.tmux.conf" "$VSCODE_HOME"/.tmux.conf
 cp -r "$PWD/dotfiles/.tmux.conf" "$VSCODE_HOME"/.tmux"
 
-chown -R "$VSCODE_USER:$VSCODE_USER" "$VSCODE_HOME/.config" "$VSCODE_HOME/.tmux*"
+chown -R "$VSCODE_USER:$VSCODE_USER" "$VSCODE_HOME" 
