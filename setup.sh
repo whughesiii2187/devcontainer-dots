@@ -6,15 +6,15 @@ VSCODE_HOME="/home/$VSCODE_USER"
 export XDG_CONFIG_HOME="$VSCODE_HOME"/.config
 mkdir -p "$XDG_CONFIG_HOME"
 
-apt update 
-apt upgrade
+apt update -y
+apt upgrade -y
 
-add-apt-repository ppa:neovim-ppa/unstable
+add-apt-repository ppa:neovim-ppa/unstable -y
 
 apt install -y neovim
 
 cp -r "$PWD/dotfiles/nvim" "$XDG_CONFIG_HOME"/nvim
 cp -r "$PWD/dotfiles/.tmux.conf" "$VSCODE_HOME"/.tmux.conf
-cp -r "$PWD/dotfiles/.tmux.conf" "$VSCODE_HOME"/.tmux"
+cp -r "$PWD/dotfiles/.tmux.conf" "$VSCODE_HOME"/.tmux
 
 chown -R "$VSCODE_USER:$VSCODE_USER" "$VSCODE_HOME" 
