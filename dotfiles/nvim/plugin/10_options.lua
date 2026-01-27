@@ -19,7 +19,7 @@
 vim.g.mapleader = ' ' -- Use `<Space>` as <Leader> key
 
 vim.o.mouse       = 'a'            -- Enable mouse
-vim.o.mousescroll = 'ver:25,hor:6' -- Customize mouse scroll
+vim.o.mousescroll = 'ver:10,hor:6' -- Customize mouse scroll
 vim.o.switchbuf   = 'usetab'       -- Use already opened buffers when switching
 vim.o.undofile    = true           -- Enable persistent undo
 
@@ -48,6 +48,8 @@ vim.o.splitright     = true       -- Vertical splits will be to the right
 vim.o.winborder      = 'single'   -- Use border in floating windows
 vim.o.wrap           = false      -- Don't visually wrap lines (toggle with \w)
 vim.o.cursorlineopt  = 'screenline,number' -- Show cursor line per screen line
+vim.o.cmdheight      = 0
+vim.wo.relativenumber = true
 
 -- Special UI symbols. More is set via 'mini.basics' later.
 vim.o.fillchars = 'eob: ,fold:╌'
