@@ -17,6 +17,6 @@ sudo cp -r "$PWD/dotfiles/.tmux" "$VSCODE_HOME"/.tmux
 sudo chown -R "$VSCODE_USER:$VSCODE_USER" "$VSCODE_HOME"
 sudo usermod -s /usr/bin/zsh "$VSCODE_USER"
 
-cat <<'EOF' | sudo -u "$VSCODE_USER" tee -a "$VSCODE_HOME/.zshrc" > /dev/null
+cat <<'EOF' | tee -a "$VSCODE_HOME/.zshrc" > /dev/null
 alias ff='nvim "$(fzf)"'
 EOF
