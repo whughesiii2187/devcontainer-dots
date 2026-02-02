@@ -24,9 +24,9 @@ cpack -G DEB
 DEBFILE=$(ls *.deb | head -n 1)
 sudo dpkg -i --force-overwrite "$DEBFILE"
 
-sudo cp -r "$PWD/dotfiles/nvim" "$XDG_CONFIG_HOME"/nvim
-sudo cp -r "$PWD/dotfiles/.tmux.conf" "$VSCODE_HOME"/.tmux.conf
-sudo cp -r "$PWD/dotfiles/.tmux" "$VSCODE_HOME"/.tmux
+sudo cp -r "$VSCODE_HOME/dotfiles/dotfiles/nvim" "$XDG_CONFIG_HOME"/nvim
+sudo cp -r "$VSCODE_HOME/dotfiles/dotfiles/.tmux.conf" "$VSCODE_HOME"/.tmux.conf
+sudo cp -r "$VSCODE_HOME/dotfiles/dotfiles/.tmux" "$VSCODE_HOME"/.tmux
 
 sudo chown -R "$VSCODE_USER:$VSCODE_USER" "$VSCODE_HOME"
 sudo usermod -s /usr/bin/zsh "$VSCODE_USER"
