@@ -24,7 +24,7 @@ arch() {
   esac
 }
 
-ensure_symlink() {
+ensure_symlink() 
   local src="$1"
   local dst="$2"
 
@@ -49,7 +49,7 @@ install_nvim() {
 
   echo "Installing Neovim $NVIM_VERSION ($ARCH)"
   mkdir -p "$PREFIX"
-  curl -L "https://github.com/neovim/neovim/releases/download/v$\{NVIM_VERSION\}/nvim-linux-${ARCH}.tar.gz" | tar -xz -C "$PREFIX" --strip-components=1
+  curl -L "https://github.com/neovim/neovim/releases/download/v${NVIM_VERSION}/nvim-linux-${ARCH}.tar.gz" | tar -xz -C "$PREFIX" --strip-components=1
 }
 
 if command -v nvim >/dev/null 2>&1; then
