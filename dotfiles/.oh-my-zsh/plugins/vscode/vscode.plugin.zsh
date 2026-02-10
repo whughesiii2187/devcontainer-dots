@@ -1,4 +1,4 @@
-# VS Code (stable / insiders) / VSCodium / Cursor zsh plugin
+# VS Code (stable / insiders) / VSCodium zsh plugin
 # Authors:
 #   https://github.com/MarsiBarsi (original author)
 #   https://github.com/babakks
@@ -19,8 +19,6 @@ if [[ -z "$VSCODE" ]]; then
     VSCODE=code-insiders
   elif which codium &>/dev/null; then
     VSCODE=codium
-  elif which cursor &>/dev/null; then
-    VSCODE=cursor
   else
     return
   fi

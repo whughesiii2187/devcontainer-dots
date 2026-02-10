@@ -8,6 +8,14 @@ git_version="${${(As: :)$(git version 2>/dev/null)}[3]}"
 # (order should follow README)
 #
 
+# The name of the current branch
+# Back-compatibility wrapper for when this function was defined here in
+# the plugin, before being pulled in to core lib/git.zsh as git_current_branch()
+# to fix the core -> git plugin dependency.
+function current_branch() {
+  git_current_branch
+}
+
 # Check for develop and similarly named branches
 function git_develop_branch() {
   command git rev-parse --git-dir &>/dev/null || return
@@ -94,7 +102,7 @@ function work_in_progress() {
 alias grt='cd "$(git rev-parse --show-toplevel || echo .)"'
 
 function ggpnp() {
-  if [[ $# == 0 ]]; then
+  if [[ "$#" == 0 ]]; then
     ggl && ggp
   else
     ggl "${*}" && ggp "${*}"
@@ -272,11 +280,10 @@ alias gpra='git pull --rebase --autostash'
 alias gprav='git pull --rebase --autostash -v'
 
 function ggu() {
-  local b
-  [[ $# != 1 ]] && b="$(git_current_branch)"
-  git pull --rebase origin "${b:-$1}"
+  [[ "$#" != 1 ]] && local b="$(git_current_branch)"
+  git pull --rebase origin "${b:=$1}"
 }
-compdef _git ggu=git-pull
+compdef _git ggu=git-checkout
 
 alias gprom='git pull --rebase origin $(git_main_branch)'
 alias gpromi='git pull --rebase=interactive origin $(git_main_branch)'
@@ -285,15 +292,14 @@ alias gprumi='git pull --rebase=interactive upstream $(git_main_branch)'
 alias ggpull='git pull origin "$(git_current_branch)"'
 
 function ggl() {
-  if [[ $# != 0 ]] && [[ $# != 1 ]]; then
+  if [[ "$#" != 0 ]] && [[ "$#" != 1 ]]; then
     git pull origin "${*}"
   else
-    local b
-    [[ $# == 0 ]] && b="$(git_current_branch)"
-    git pull origin "${b:-$1}"
+    [[ "$#" == 0 ]] && local b="$(git_current_branch)"
+    git pull origin "${b:=$1}"
   fi
 }
-compdef _git ggl=git-pull
+compdef _git ggl=git-checkout
 
 alias gluc='git pull upstream $(git_current_branch)'
 alias glum='git pull upstream $(git_main_branch)'
@@ -301,11 +307,10 @@ alias gp='git push'
 alias gpd='git push --dry-run'
 
 function ggf() {
-  local b
-  [[ $# != 1 ]] && b="$(git_current_branch)"
-  git push --force origin "${b:-$1}"
+  [[ "$#" != 1 ]] && local b="$(git_current_branch)"
+  git push --force origin "${b:=$1}"
 }
-compdef _git ggf=git-push
+compdef _git ggf=git-checkout
 
 alias gpf!='git push --force'
 is-at-least 2.30 "$git_version" \
@@ -313,11 +318,10 @@ is-at-least 2.30 "$git_version" \
   || alias gpf='git push --force-with-lease'
 
 function ggfl() {
-  local b
-  [[ $# != 1 ]] && b="$(git_current_branch)"
-  git push --force-with-lease origin "${b:-$1}"
+  [[ "$#" != 1 ]] && local b="$(git_current_branch)"
+  git push --force-with-lease origin "${b:=$1}"
 }
-compdef _git ggfl=git-push
+compdef _git ggfl=git-checkout
 
 alias gpsup='git push --set-upstream origin $(git_current_branch)'
 is-at-least 2.30 "$git_version" \
@@ -329,15 +333,14 @@ alias gpod='git push origin --delete'
 alias ggpush='git push origin "$(git_current_branch)"'
 
 function ggp() {
-  if [[ $# != 0 ]] && [[ $# != 1 ]]; then
+  if [[ "$#" != 0 ]] && [[ "$#" != 1 ]]; then
     git push origin "${*}"
   else
-    local b
-    [[ $# == 0 ]] && b="$(git_current_branch)"
-    git push origin "${b:-$1}"
+    [[ "$#" == 0 ]] && local b="$(git_current_branch)"
+    git push origin "${b:=$1}"
   fi
 }
-compdef _git ggp=git-push
+compdef _git ggp=git-checkout
 
 alias gpu='git push upstream'
 alias grb='git rebase'
@@ -419,13 +422,19 @@ alias gke='\gitk --all $(git log --walk-reflogs --pretty=%h) &!'
 
 unset git_version
 
-# Logic for adding warnings on deprecated aliases or functions
-local old_name new_name
-for old_name new_name (
-  current_branch  git_current_branch
+# Logic for adding warnings on deprecated aliases
+local old_alias new_alias
+for old_alias new_alias (
+  # TODO(2023-10-19): remove deprecated `git pull --rebase` aliases
+  gup     gpr
+  gupv    gprv
+  gupa    gpra
+  gupav   gprav
+  gupom   gprom
+  gupomi  gpromi
 ); do
-  aliases[$old_name]="
-    print -Pu2 \"%F{yellow}[oh-my-zsh] '%F{red}${old_name}%F{yellow}' is deprecated, using '%F{green}${new_name}%F{yellow}' instead.%f\"
-    $new_name"
+  aliases[$old_alias]="
+    print -Pu2 \"%F{yellow}[oh-my-zsh] '%F{red}${old_alias}%F{yellow}' is a deprecated alias, using '%F{green}${new_alias}%F{yellow}' instead.%f\"
+    $new_alias"
 done
-unset old_name new_name
+unset old_alias new_alias
