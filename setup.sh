@@ -38,7 +38,7 @@ install_nvim() {
 
   echo "Installing Neovim $NVIM_VERSION ($ARCH)"
   mkdir -p "$PREFIX"
-  curl -LO "https://github.com/neovim/neovim/releases/download/v${NVIM_VERSION}/nvim-linux-${ARCH}.tar.gz" | tar -zxvf - -C "$PREFIX" --strip-components=1
+  curl -L "https://github.com/neovim/neovim/releases/download/v${NVIM_VERSION}/nvim-linux-${ARCH}.tar.gz" | tar -zxvf - -C "$PREFIX" --strip-components=1
 }
 
 if command -v nvim >/dev/null 2>&1; then
@@ -56,7 +56,8 @@ fi
 ### OhMyPosh 
 ### ----------------------------
 echo "Installing OhMyPosh"
-curl -s https://ohmyposh.dev/install.sh | bash -s
+curl -L https://ohmyposh.dev/install.sh | bash -s
+eport PATH=$PATH:/home/vscode/.local/bin
 
 ### ----------------------------
 ### Dotfiles
