@@ -66,6 +66,7 @@ echo "Applying dotfiles"
 ln -sfn "$DOTFILES_DIR/dotfiles/.config/nvim" "$XDG_CONFIG_HOME/nvim"
 ln -sfn "$DOTFILES_DIR/dotfiles/.config/ohmyposh" "$XDG_CONFIG_HOME/ohmyposh"
 ln -sfn "$DOTFILES_DIR/dotfiles/.zshrc" "$HOME/.zshrc"
+ln -sfn "$DOTFILES_DIR/dotfiles/.oh-my-zsh" "$HOME/.oh-my-zsh"
 
 echo "Dotfiles setup complete"
 
