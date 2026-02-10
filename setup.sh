@@ -63,9 +63,9 @@ curl -s https://ohmyposh.dev/install.sh | bash -s
 ### ----------------------------
 echo "Applying dotfiles"
 
-ln -sfn "$DOTFILES_DIR/.config/nvim" "$XDG_CONFIG_HOME/nvim"
-ln -sfn "$DOTFILES_DIR/.config/ohmyposh" "$XDG_CONFIG_HOME/ohmyposh"
-ln -sfn "$DOTFILES_DIR/.zshrc" "$HOME/.zshrc"
+ln -sfn "$DOTFILES_DIR/dotfiles/.config/nvim" "$XDG_CONFIG_HOME/nvim"
+ln -sfn "$DOTFILES_DIR/dotfiles/.config/ohmyposh" "$XDG_CONFIG_HOME/ohmyposh"
+ln -sfn "$DOTFILES_DIR/dotfiles/.zshrc" "$HOME/.zshrc"
 
 echo "Dotfiles setup complete"
 
