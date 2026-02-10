@@ -45,11 +45,11 @@ if command -v nvim >/dev/null 2>&1; then
   CURRENT="$(nvim --version | head -n1 | awk '{print $2}' | sed 's/v//')"
   if [ "$CURRENT" != "$NVIM_VERSION" ]; then
     install_nvim
-    ln -sf "$LOCAL_OPT/nvim-$NVIM_VERSION/bin/nvim" "$LOCAL_BIN/nvim"
+    ln -sf "$LOCAL_OPT/nvim-$NVIM_VERSION/nvim-linux-${ARCH}/bin/nvim" "$LOCAL_BIN/nvim"
   fi
 else
   install_nvim
-  ln -sf "$LOCAL_OPT/nvim-$NVIM_VERSION/bin/nvim" "$LOCAL_BIN/nvim"
+  ln -sf "$LOCAL_OPT/nvim-$NVIM_VERSION/nvim-linux-${ARCH}/bin/nvim" "$LOCAL_BIN/nvim"
 fi
 
 ### ----------------------------
