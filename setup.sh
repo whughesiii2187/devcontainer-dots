@@ -25,8 +25,8 @@ arch() {
 }
 
 ensure_symlink() 
-  local src="$1"
-  local dst="$2"
+  src="$1"
+  dst="$2"
 
   if [ -e "$dst" ] && [ ! -L "$dst" ]; then
     echo "Skipping $dst (exists and not a symlink)"
@@ -74,8 +74,8 @@ curl -s https://ohmyposh.dev/install.sh | bash -s
 ### ----------------------------
 echo "Applying dotfiles"
 
-ensure_symlink "$DOTFILES_DIR/.config/nvim/" "$XDG_CONFIG_HOME/nvim/"
-ensure_symlink "$DOTFILES_DIR/.config/ohmyposh/" "$XDG_CONFIG_HOME/ohmyposh/"
+ensure_symlink "$DOTFILES_DIR/.config/nvim" "$XDG_CONFIG_HOME/nvim/"
+ensure_symlink "$DOTFILES_DIR/.config/ohmyposh" "$XDG_CONFIG_HOME/ohmyposh/"
 ensure_symlink "$DOTFILES_DIR/.zshrc" "$HOME/.zshrc"
 
 echo "Dotfiles setup complete"
