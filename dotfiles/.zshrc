@@ -15,7 +15,6 @@ plugins=(
 # User configuration
 zstyle ':completion:*' use-cache no
 source $ZSH/oh-my-zsh.sh
-source ~/.devpod_zsh
 
 eval "$(oh-my-posh init zsh --config $HOME/.config/ohmyposh/default.omp.toml)"
 

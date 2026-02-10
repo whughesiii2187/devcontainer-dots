@@ -24,12 +24,12 @@ arch() {
   esac
 }
 
+ARCH="$(arch)"
+
 ### ----------------------------
 ### Neovim (user-scoped)
 ### ----------------------------
 install_nvim() {
-  local ARCH
-  ARCH="$(arch)"
   local PREFIX="$LOCAL_OPT/nvim-$NVIM_VERSION"
 
   if [ -x "$PREFIX/bin/nvim" ]; then
