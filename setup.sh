@@ -24,17 +24,6 @@ arch() {
   esac
 }
 
-ensure_symlink() 
-  src="$1"
-  dst="$2"
-
-  if [ -e "$dst" ] && [ ! -L "$dst" ]; then
-    echo "Skipping $dst (exists and not a symlink)"
-    return
-  fi
-  ln -sf "$src" "$dst"
-}
-
 ### ----------------------------
 ### Neovim (user-scoped)
 ### ----------------------------
@@ -74,9 +63,9 @@ curl -s https://ohmyposh.dev/install.sh | bash -s
 ### ----------------------------
 echo "Applying dotfiles"
 
-ensure_symlink "$DOTFILES_DIR/.config/nvim" "$XDG_CONFIG_HOME/nvim/"
-ensure_symlink "$DOTFILES_DIR/.config/ohmyposh" "$XDG_CONFIG_HOME/ohmyposh/"
-ensure_symlink "$DOTFILES_DIR/.zshrc" "$HOME/.zshrc"
+ln -s "$DOTFILES_DIR/.config/nvim" "$XDG_CONFIG_HOME/nvim/"
+ln -s "$DOTFILES_DIR/.config/ohmyposh" "$XDG_CONFIG_HOME/ohmyposh/"
+ln -s "$DOTFILES_DIR/.zshrc" "$HOME/.zshrc"
 
 echo "Dotfiles setup complete"
 
