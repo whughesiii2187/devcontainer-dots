@@ -57,7 +57,6 @@ fi
 ### ----------------------------
 echo "Installing OhMyPosh"
 curl -L https://ohmyposh.dev/install.sh | bash -s
-export PATH=$PATH:/home/vscode/.local/bin
 
 ### ----------------------------
 ### Dotfiles
