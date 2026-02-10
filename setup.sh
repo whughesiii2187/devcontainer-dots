@@ -49,11 +49,11 @@ install_nvim() {
 
   echo "Installing Neovim $NVIM_VERSION ($ARCH)"
   mkdir -p "$PREFIX"
-  curl -L "https://github.com/neovim/neovim/releases/download/v$\{NVIM_VERSION\}/nvim-linux-$\{ARCH\}.tar.gz" | tar -xz -C "$PREFIX" --strip-components=1
+  curl -L "https://github.com/neovim/neovim/releases/download/v$\{NVIM_VERSION\}/nvim-linux-${ARCH}.tar.gz" | tar -xz -C "$PREFIX" --strip-components=1
 }
 
 if command -v nvim >/dev/null 2>&1; then
-  CURRENT="$(nvim --version | head -n1 | awk '\{print $2\}' | sed 's/v//')"
+  CURRENT="$(nvim --version | head -n1 | awk '{print $2}' | sed 's/v//')"
   if [ "$CURRENT" != "$NVIM_VERSION" ]; then
     install_nvim
     ln -sf "$LOCAL_OPT/nvim-$NVIM_VERSION/bin/nvim" "$LOCAL_BIN/nvim"
@@ -75,7 +75,7 @@ curl -s https://ohmyposh.dev/install.sh | bash -s
 echo "Applying dotfiles"
 
 ensure_symlink "$DOTFILES_DIR/.config/nvim" "$XDG_CONFIG_HOME/nvim"
-ensure_symlink "$DOTFILES_DIR/.config/ohmyposh" "$XDG_CONFIG_HOME/ohmyposh"
+ensure_symlink "$DOTFILES_DIR/.config/ohmyposh" "$XDG_CONFIG_HOME/ohmyposh/"
 ensure_symlink "$DOTFILES_DIR/.zshrc" "$HOME/.zshrc"
 
 echo "Dotfiles setup complete"
