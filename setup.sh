@@ -1,36 +1,84 @@
-#!/bin/bash
+set -euo pipefail
 
-VSCODE_USER="vscode"
-VSCODE_HOME="/home/$VSCODE_USER"
-NVIMVER=0.11.4
+### ----------------------------
+### Config
+### ----------------------------
+NVIM_VERSION="0.11.4"
 
-export XDG_CONFIG_HOME="$VSCODE_HOME"/.config
-mkdir -p "$XDG_CONFIG_HOME"
+DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+LOCAL_BIN="$HOME/.local/bin"
+LOCAL_OPT="$HOME/.local/opt"
+XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
 
-# sudo add-apt-repository ppa:neovim-ppa/unstable -y
-sudo apt update -y
-# sudo apt install -y neovim tmux fzf ripgrep
-sudo apt install -y tmux fzf ripgrep file ninja-build gettext cmake unzip curl
+mkdir -p "$LOCAL_BIN" "$LOCAL_OPT" "$XDG_CONFIG_HOME"
+export PATH="$LOCAL_BIN:$PATH"
 
-cd /tmp
-mkdir neovim && cd neovim
-curl -LO "https://github.com/neovim/neovim/archive/refs/tags/v${NVIMVER}.tar.gz"
-tar xvzf "v${NVIMVER}.tar.gz"
-cd "neovim-${NVIMVER}"
-make CMAKE_BUILD_TYPE=RelWithDebInfo
-cd build
-cpack -G DEB
+### ----------------------------
+### Helpers
+### ----------------------------
+arch() {
+  case "$(uname -m)" in
+    x86_64) echo amd64 ;;
+    aarch64|arm64) echo arm64 ;;
+    *) echo "Unsupported architecture" && exit 1 ;;
+  esac
+}
 
-DEBFILE=$(ls *.deb | head -n 1)
-sudo dpkg -i --force-overwrite "$DEBFILE"
+ensure_symlink() {
+  local src="$1"
+  local dst="$2"
 
-sudo cp -r "$VSCODE_HOME/dotfiles/dotfiles/nvim" "$XDG_CONFIG_HOME"/nvim
-sudo cp -r "$VSCODE_HOME/dotfiles/dotfiles/.tmux.conf" "$VSCODE_HOME"/.tmux.conf
-sudo cp -r "$VSCODE_HOME/dotfiles/dotfiles/.tmux" "$VSCODE_HOME"/.tmux
+  if [ -e "$dst" ] && [ ! -L "$dst" ]; then
+    echo "Skipping $dst (exists and not a symlink)"
+    return
+  fi
+  ln -sf "$src" "$dst"
+}
 
-sudo chown -R "$VSCODE_USER:$VSCODE_USER" "$VSCODE_HOME"
-sudo usermod -s /usr/bin/zsh "$VSCODE_USER"
+### ----------------------------
+### Neovim (user-scoped)
+### ----------------------------
+install_nvim() {
+  local ARCH
+  ARCH="$(arch)"
+  local PREFIX="$LOCAL_OPT/nvim-$NVIM_VERSION"
 
-cat <<'EOF' | tee -a "$VSCODE_HOME/.zshrc" > /dev/null
-alias ff='nvim "$(fzf)"'
-EOF
+  if [ -x "$PREFIX/bin/nvim" ]; then
+    return
+  fi
+
+  echo "Installing Neovim $NVIM_VERSION ($ARCH)"
+  mkdir -p "$PREFIX"
+  curl -L \\
+    "https://github.com/neovim/neovim/releases/download/v$\{NVIM_VERSION\}/nvim-linux-$\{ARCH\}.tar.gz" \\
+    | tar -xz -C "$PREFIX" --strip-components=1
+}
+
+if command -v nvim >/dev/null 2>&1; then
+  CURRENT="$(nvim --version | head -n1 | awk '\{print $2\}' | sed 's/v//')"
+  if [ "$CURRENT" != "$NVIM_VERSION" ]; then
+    install_nvim
+    ln -sf "$LOCAL_OPT/nvim-$NVIM_VERSION/bin/nvim" "$LOCAL_BIN/nvim"
+  fi
+else
+  install_nvim
+  ln -sf "$LOCAL_OPT/nvim-$NVIM_VERSION/bin/nvim" "$LOCAL_BIN/nvim"
+fi
+
+### ----------------------------
+### OhMyPosh 
+### ----------------------------
+echo "Installing OhMyPosh"
+curl -s https://ohmyposh.dev/install.sh | bash -s
+
+### ----------------------------
+### Dotfiles
+### ----------------------------
+echo "Applying dotfiles"
+
+ensure_symlink "$DOTFILES_DIR/.config/nvim" "$XDG_CONFIG_HOME/nvim"
+ensure_symlink "$DOTFILES_DIR/.config/ohmyposh" "$XDG_CONFIG_HOME/ohmyposh"
+ensure_symlink "$DOTFILES_DIR/.zshrc" "$HOME/.zshrc"
+
+echo "Dotfiles setup complete"
+
