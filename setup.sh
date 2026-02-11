@@ -62,8 +62,9 @@ curl -L https://ohmyposh.dev/install.sh | bash -s
 ### ----------------------------
 ### LazyGit
 ### ----------------------------
-
+echo "Installing Lazygit"
 curl -L "https://github.com/jesseduffield/lazygit/releases/download/v${LG_VERSION}/lazygit_${LG_VERSION}_linux_${ARCH}.tar.gz" | tar -zxvf - -C "$PREFIX"
+
 ### ----------------------------
 ### Dotfiles
 ### ----------------------------
