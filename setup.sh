@@ -4,6 +4,7 @@
 ### Config
 ### ----------------------------
 NVIM_VERSION="0.11.4"
+LG_VERSION="0.59.0"
 
 DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 LOCAL_BIN="$HOME/.local/bin"
@@ -53,11 +54,16 @@ else
 fi
 
 ### ----------------------------
-### OhMyPosh 
+### OhMyPosh
 ### ----------------------------
 echo "Installing OhMyPosh"
 curl -L https://ohmyposh.dev/install.sh | bash -s
 
+### ----------------------------
+### LazyGit
+### ----------------------------
+
+curl -L "https://github.com/jesseduffield/lazygit/releases/download/v${LG_VERSION}/lazygit_${LG_VERSION}_linux_${ARCH}.tar.gz" | tar -zxvf - -C "$PREFIX"
 ### ----------------------------
 ### Dotfiles
 ### ----------------------------
