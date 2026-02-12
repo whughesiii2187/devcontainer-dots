@@ -54,21 +54,53 @@ else
 fi
 
 ### ----------------------------
+### FZF
+### ----------------------------
+install_fzf() {
+  if command -v fzf >/dev/null 2>&1; then
+    return
+  fi
+
+  echo "Installing FZF"
+  git clone --depth 1 https://github.com/junegunn/fzf.git "$LOCAL_OPT/fzf" "$LOCAL_OPT/fzf/install" --bin
+  ln -sf "$LOCAL_OPT/fzf/bin/fzf" "$LOCAL_BIN/fzf"
+}
+
+install_fzf
+
+### ----------------------------
 ### OhMyPosh
 ### ----------------------------
-echo "Installing OhMyPosh"
-curl -L https://ohmyposh.dev/install.sh | bash -s
+install_ohmyposh() {
+  if command -v oh-my-posh >/dev/null 2>&1; then
+    return
+  fi
+
+  echo "Installing OhMyPosh"
+  curl -L https://ohmyposh.dev/install.sh | bash -s
+}
+
+install_ohmyposh
 
 ### ----------------------------
 ### LazyGit
 ### ----------------------------
-PREFIX="$LOCAL_OPT/lazygit"
-mkdir -p "$PREFIX"
+install_lazygit() {
+  local PREFIX="$LOCAL_OPT/lazygit"
 
-echo "Installing Lazygit"
-curl -L "https://github.com/jesseduffield/lazygit/releases/download/v${LG_VERSION}/lazygit_${LG_VERSION}_linux_${ARCH}.tar.gz" | tar -zxvf - -C "$PREFIX"
+  if [ -x "$PREFIX" ]; then
+    return
+  fi
 
-ln -sf "$LOCAL_OPT/lazygit/lazygit" "$LOCAL_BIN/lazygit"
+  echo "Installing Lazygit"
+  mkdir -p "$PREFIX"
+
+  curl -L "https://github.com/jesseduffield/lazygit/releases/download/v${LG_VERSION}/lazygit_${LG_VERSION}_linux_${ARCH}.tar.gz" | tar -zxvf - -C "$PREFIX"
+  ln -sf "$LOCAL_OPT/lazygit/lazygit" "$LOCAL_BIN/lazygit"
+}
+
+install_lazygit
+
 ### ----------------------------
 ### Dotfiles
 ### ----------------------------
@@ -76,8 +108,14 @@ echo "Applying dotfiles"
 
 ln -sfn "$DOTFILES_DIR/dotfiles/.config/nvim" "$XDG_CONFIG_HOME/nvim"
 ln -sfn "$DOTFILES_DIR/dotfiles/.config/ohmyposh" "$XDG_CONFIG_HOME/ohmyposh"
-ln -sfn "$DOTFILES_DIR/dotfiles/.zshrc" "$HOME/.zshrc"
 ln -sfn "$DOTFILES_DIR/dotfiles/.oh-my-zsh" "$HOME/.oh-my-zsh"
 
-echo "Dotfiles setup complete"
+if [ -f "$HOME/.zshrc" ]; then
+  if ! grep -q 'ZSH_DISABLE_COMPFIX="true"' "$HOME/.zshrc"; then
+    sed -i '/source .*oh-my-zsh.sh/i ZSH_DISABLE_COMPFIX="true"' "$HOME/.zshrc"
+  fi
+else
+  ln -sfn "$DOTFILES_DIR/dotfiles/.zshrc" "$HOME/.zshrc"
+fi
 
+echo "Dotfiles setup complete"
