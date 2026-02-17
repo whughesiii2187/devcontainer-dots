@@ -62,7 +62,8 @@ install_fzf() {
   fi
 
   echo "Installing FZF"
-  git clone --depth 1 https://github.com/junegunn/fzf.git "$LOCAL_OPT/fzf" "$LOCAL_OPT/fzf/install" --bin
+  git clone --depth 1 https://github.com/junegunn/fzf.git "$LOCAL_OPT/fzf" 
+  "$LOCAL_OPT/fzf/install"
   ln -sf "$LOCAL_OPT/fzf/bin/fzf" "$LOCAL_BIN/fzf"
 }
 
