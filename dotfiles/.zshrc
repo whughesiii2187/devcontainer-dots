@@ -14,7 +14,7 @@ plugins=(
 
 # User configuration
 zstyle ':completion:*' use-cache no
-ZSH_DISABLE_COMPFIX=true
+export ZSH_DISABLE_COMPFIX=true
 source $ZSH/oh-my-zsh.sh
 
 eval "$(oh-my-posh init zsh --config $HOME/.config/ohmyposh/default.omp.toml)"
