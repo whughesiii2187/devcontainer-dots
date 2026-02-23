@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 ### ----------------------------
 ### Config
@@ -115,6 +115,9 @@ if [ -f "$HOME/.zshrc" ]; then
   if ! grep -q 'ZSH_DISABLE_COMPFIX="true"' "$HOME/.zshrc"; then
     sed -i '/source .*oh-my-zsh.sh/i ZSH_DISABLE_COMPFIX="true"' "$HOME/.zshrc"
   fi
+  echo "" >> "$HOME/.zshrc"
+  echo "# --- Appeneded from dotfiles repo ---" >> "$HOME/.zshrc"
+  cat "DOTFILES_DIR/dotfiles_dir/.zshrc" >> "$HOME/.zshrc"
 else
   ln -sfn "$DOTFILES_DIR/dotfiles/.zshrc" "$HOME/.zshrc"
 fi
