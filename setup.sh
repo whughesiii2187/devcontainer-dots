@@ -107,6 +107,10 @@ install_lazygit
 ### ----------------------------
 echo "Applying dotfiles"
 
+if [ -f "$HOME/.oh-my-zsh" ]; then
+  rm -rf "$HOME/.oh-my-zsh"
+fi 
+
 ln -sfn "$DOTFILES_DIR/dotfiles/.config/nvim" "$XDG_CONFIG_HOME/nvim"
 ln -sfn "$DOTFILES_DIR/dotfiles/.config/ohmyposh" "$XDG_CONFIG_HOME/ohmyposh"
 ln -sfn "$DOTFILES_DIR/dotfiles/.oh-my-zsh" "$HOME/.oh-my-zsh"
@@ -117,7 +121,7 @@ if [ -f "$HOME/.zshrc" ]; then
   fi
   echo "" >> "$HOME/.zshrc"
   echo "# --- Appeneded from dotfiles repo ---" >> "$HOME/.zshrc"
-  cat "DOTFILES_DIR/dotfiles_dir/.zshrc" >> "$HOME/.zshrc"
+  cat "$DOTFILES_DIR/dotfiles/.zshrc" >> "$HOME/.zshrc"
 else
   ln -sfn "$DOTFILES_DIR/dotfiles/.zshrc" "$HOME/.zshrc"
 fi
