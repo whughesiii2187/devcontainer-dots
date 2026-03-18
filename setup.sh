@@ -27,9 +27,35 @@ arch() {
 
 ARCH="$(arch)"
 
+# Try a URL with $ARCH first; if it 404s, retry with x86_64.
+# Usage: curl_with_arch_fallback <url-containing-$ARCH> [curl flags...]
+curl_with_arch_fallback() {
+  local url="$1"; shift
+  local status
+  status=$(curl -o /dev/null -s -w "%{http_code}" --head "$url")
+  if [ "$status" = "200" ]; then
+    curl "$@" "$url"
+  else
+    local fallback_url="${url//${ARCH}/x86_64}"
+    echo "Warning: $url not found (HTTP $status), falling back to x86_64" >&2
+    curl "$@" "$fallback_url"
+  fi
+}
+
 ### ----------------------------
 ### Neovim (user-scoped)
 ### ----------------------------
+
+nvim_arch_dir() {
+  # Returns the actual extracted dir name, preferring $ARCH then x86_64
+  local base="$LOCAL_OPT/nvim-$NVIM_VERSION"
+  if [ -d "$base/nvim-linux-${ARCH}" ]; then
+    echo "nvim-linux-${ARCH}"
+  else
+    echo "nvim-linux-x86_64"
+  fi
+}
+
 install_nvim() {
   local PREFIX="$LOCAL_OPT/nvim-$NVIM_VERSION"
 
@@ -39,18 +65,18 @@ install_nvim() {
 
   echo "Installing Neovim $NVIM_VERSION ($ARCH)"
   mkdir -p "$PREFIX"
-  curl -L "https://github.com/neovim/neovim/releases/download/v${NVIM_VERSION}/nvim-linux-${ARCH}.tar.gz" | tar -zxvf - -C "$PREFIX"
+  curl_with_arch_fallback "https://github.com/neovim/neovim/releases/download/v${NVIM_VERSION}/nvim-linux-${ARCH}.tar.gz" -L | tar -zxvf - -C "$PREFIX"
 }
 
 if command -v nvim >/dev/null 2>&1; then
   CURRENT="$(nvim --version | head -n1 | awk '{print $2}' | sed 's/v//')"
   if [ "$CURRENT" != "$NVIM_VERSION" ]; then
     install_nvim
-    ln -sf "$LOCAL_OPT/nvim-$NVIM_VERSION/nvim-linux-${ARCH}/bin/nvim" "$LOCAL_BIN/nvim"
+    ln -sf "$LOCAL_OPT/nvim-$NVIM_VERSION/$(nvim_arch_dir)/bin/nvim" "$LOCAL_BIN/nvim"
   fi
 else
   install_nvim
-  ln -sf "$LOCAL_OPT/nvim-$NVIM_VERSION/nvim-linux-${ARCH}/bin/nvim" "$LOCAL_BIN/nvim"
+  ln -sf "$LOCAL_OPT/nvim-$NVIM_VERSION/$(nvim_arch_dir)/bin/nvim" "$LOCAL_BIN/nvim"
 fi
 
 ### ----------------------------
@@ -68,20 +94,6 @@ install_fzf() {
 }
 
 install_fzf
-
-### ----------------------------
-### OhMyPosh
-### ----------------------------
-install_ohmyposh() {
-  if command -v oh-my-posh >/dev/null 2>&1; then
-    return
-  fi
-
-  echo "Installing OhMyPosh"
-  curl -L https://ohmyposh.dev/install.sh | bash -s
-}
-
-install_ohmyposh
 
 ### ----------------------------
 ### LazyGit
@@ -112,16 +124,75 @@ if [ -f "$HOME/.oh-my-zsh" ]; then
 fi 
 
 ln -sfn "$DOTFILES_DIR/dotfiles/.config/nvim" "$XDG_CONFIG_HOME/nvim"
-ln -sfn "$DOTFILES_DIR/dotfiles/.config/ohmyposh" "$XDG_CONFIG_HOME/ohmyposh"
 ln -sfn "$DOTFILES_DIR/dotfiles/.oh-my-zsh" "$HOME/.oh-my-zsh"
+ln -sfn "$DOTFILES_DIR/dotfiles/.tmux" "$HOME/.tmux"
+ln -sfn "$DOTFILES_DIR/dotfiles/.tmux.conf" "$HOME/.tmux.conf"
 
-if [ -f "$HOME/.zshrc" ]; then
-  if ! grep -q 'ZSH_DISABLE_COMPFIX="true"' "$HOME/.zshrc"; then
-    sed -i '/source .*oh-my-zsh.sh/i ZSH_DISABLE_COMPFIX="true"' "$HOME/.zshrc"
+### ----------------------------
+### .zshrc patching
+### ----------------------------
+ZSHRC="$HOME/.zshrc"
+DOTFILE_ALIASES="$DOTFILES_DIR/dotfiles/.zshrc"
+
+patch_zshrc() {
+  # --- 1. ZSH_DISABLE_COMPFIX (unchanged from original) ---
+  if ! grep -q 'ZSH_DISABLE_COMPFIX="true"' "$ZSHRC"; then
+    sed -i '/source .*oh-my-zsh.sh/i ZSH_DISABLE_COMPFIX="true"' "$ZSHRC"
   fi
-  echo "" >> "$HOME/.zshrc"
-  echo "# --- Appeneded from dotfiles repo ---" >> "$HOME/.zshrc"
-  cat "$DOTFILES_DIR/dotfiles/.zshrc" >> "$HOME/.zshrc"
+
+  # --- 2. Add ~/.local/bin to PATH if not already present ---
+  if ! grep -q 'LOCAL_BIN\|\.local/bin' "$ZSHRC"; then
+    # Find the last existing export PATH line and append after it,
+    # otherwise just append to end of file.
+    if grep -q 'export PATH' "$ZSHRC"; then
+      sed -i '/export PATH/a export PATH="$HOME/.local/bin:$PATH"' "$ZSHRC"
+    else
+      printf '\nexport PATH="$HOME/.local/bin:$PATH"\n' >> "$ZSHRC"
+    fi
+  fi
+
+  # --- 3. Inject aliases where the file already has its alias block ---
+  # Extract only `alias` lines from the dotfile source
+  local alias_lines
+  alias_lines=$(grep -E '^\s*alias ' "$DOTFILE_ALIASES")
+
+  if [ -z "$alias_lines" ]; then
+    echo "No aliases found in $DOTFILE_ALIASES, skipping." >&2
+    return
+  fi
+
+  # Build a sentinel so we never double-inject
+  local sentinel="# --- aliases from dotfiles repo ---"
+  if grep -q "$sentinel" "$ZSHRC"; then
+    echo ".zshrc aliases already patched, skipping." >&2
+    return
+  fi
+
+  if grep -q '^\s*alias ' "$ZSHRC"; then
+    # Find the line number of the LAST existing alias line and insert after it
+    local last_alias_line
+    last_alias_line=$(grep -n '^\s*alias ' "$ZSHRC" | tail -1 | cut -d: -f1)
+    sed -i "${last_alias_line}a\\
+\\
+${sentinel}" "$ZSHRC"
+    # Re-read the sentinel's line number (it just moved) and append aliases below it
+    local insert_at
+    insert_at=$(grep -n "$sentinel" "$ZSHRC" | cut -d: -f1)
+    while IFS= read -r line; do
+      sed -i "${insert_at}a\\${line}" "$ZSHRC"
+      (( insert_at++ ))
+    done <<< "$alias_lines"
+  else
+    # No aliases exist yet — append a new block at the end
+    {
+      printf '\n%s\n' "$sentinel"
+      echo "$alias_lines"
+    } >> "$ZSHRC"
+  fi
+}
+
+if [ -f "$ZSHRC" ]; then
+  patch_zshrc
 else
   ln -sfn "$DOTFILES_DIR/dotfiles/.zshrc" "$HOME/.zshrc"
 fi
