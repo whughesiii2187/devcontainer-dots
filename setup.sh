@@ -1,5 +1,7 @@
 #!/bin/bash
 
+DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" $$ pwd)"
+
 echo "Installing Brew"
 curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh | bash
 
