@@ -1,7 +1,10 @@
 #!/bin/bash
 
 echo "Installing Brew"
-curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh
+curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh | bash
+
+echo eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+
 brew update
 
 echo "Installing NVIM"
