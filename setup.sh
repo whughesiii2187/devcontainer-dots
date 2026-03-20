@@ -46,7 +46,7 @@ ZSHRC="$HOME/.zshrc"
 DOTFILE_ALIASES="$DOTFILES_DIR/dotfiles/.zshrc"
 
 if [ -f "$ZSHRC" ]; then
-  echo "source" "$DOTFILES_DIR/dotfiles/.zshrc" >> "$HOME/.zshrc"
+  echo "source $DOTFILES_DIR/dotfiles/.zshrc" >> "$HOME/.zshrc"
 else
   ln -sfn "$DOTFILES_DIR/dotfiles/.zshrc" "$HOME/.zshrc"
 fi
