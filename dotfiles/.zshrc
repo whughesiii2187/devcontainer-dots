@@ -25,3 +25,4 @@ alias gg="lazygit"
 alias ff='nvim "$(fzf)"'
 alias acr="az login && az acr login -n r1k8sacrdev"
 
+eval "/home/linuxbrew/.linuxbrew/bin/brew shellenv zsh"
