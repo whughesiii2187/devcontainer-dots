@@ -12,7 +12,7 @@ plugins=(
 # User configuration
 zstyle ':completion:*' use-cache no
 export ZSH_DISABLE_COMPFIX=true
-ZSH_THEME="bureau"
+ZSH_THEME="miloshadzic"
 source $ZSH/oh-my-zsh.sh
 
 alias vi="nvim"
