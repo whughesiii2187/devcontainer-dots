@@ -150,11 +150,11 @@ now(function() require('mini.starter').setup({
     items = {
       Mvim_starter_custom(),
       -- require("mini.starter").sections.recent_files(5, false, true),
-      require("mini.starter").sections.recent_files(5, true, true),
-      require("mini.starter").sections.sessions(10, true),
+      require("mini.starter").sections.recent_files(5, true, false),
+      require("mini.starter").sections.sessions(5, true),
       require("mini.starter").sections.builtin_actions(),
     },
-    footer = function() return "Press Space for the menu" end,
+    footer = function() return "  Press space for the menu" end,
   }) 
 end)
 

@@ -8,7 +8,6 @@ plugins=(
   helm
 )
 
-
 # User configuration
 zstyle ':completion:*' use-cache no
 export ZSH_DISABLE_COMPFIX=true
@@ -20,9 +19,7 @@ alias v="nvim"
 alias vim="nvim"
 alias getmyip="dig -4 TXT +short o-o.myaddr.l.google.com @ns1.google.com"
 alias python="python3"
-alias genpass="~/scripts/python/randomgen.py"
 alias gg="lazygit"
 alias ff='nvim "$(fzf)"'
-alias acr="az login && az acr login -n r1k8sacrdev"
 
 eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv zsh)"

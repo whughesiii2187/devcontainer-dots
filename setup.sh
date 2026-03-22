@@ -10,23 +10,8 @@ eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv zsh)"
 
 brew update
 
-echo "Installing NVIM"
-brew install neovim
-
-echo "installing fzf"
-brew install fzf
-
-echo "Installing lazygit"
-brew install lazygit
-
-echo "Installing ZSH"
-brew install zsh
-
-echo "Installing TMUX"
-brew install tmux
-
-echo "Installing Copilot"
-brew install copilot
+echo "Installing packages"
+brew install neovim fzf lazygit zsh tmux copilot
 
 ### ----------------------------
 ### Dotfiles
